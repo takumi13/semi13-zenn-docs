@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/takumi13/semi13-zenn-docs#readme",
   "dependencies": {
-    "zenn-cli": "^0.2.10"
+    "zenn-cli": "^0.2.11"
   },
   "type": "commonjs"
 }

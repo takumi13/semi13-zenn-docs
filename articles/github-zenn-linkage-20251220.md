@@ -1,5 +1,5 @@
 ---
-title: "KeycloakのFAPIポリシに準拠したOIDCクライアントを作る(SpringBoot) 前編"
+title: "KeycloakのFAPIポリシーに準拠したOIDCクライアントを作る(SpringBoot) 前編"
 emoji: "🌟"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["Java", "SpringBoot", "Keycloak", "OIDC", "FAPI"]
@@ -10,10 +10,12 @@ published: false
 
 ### 1.1. 自己紹介
 
-（ToDo:自己紹介）
+はじめまして、@semi13 です。
+OpenID Foundation Japan TG40WGのメンバとしてこれからいくつか記事を執筆予定です。よろしくお願いいたします。
 
 さて。私がこのような記事を執筆しようと思った理由はシンプルです。
-OpenID Connect準拠のクライアントのバックエンド処理を（たとえその大部分を生成AIに頼ろうとも）自分で書いたことがないからです。
+OpenID Connect準拠のクライアントのバックエンド処理を自分で書いたことがないからです。
+とはいえ一から書ける能力も時間も足りないため、バイブコーディングに頼ろうと思います。
 
 そしてもう一つ。Keycloakを使ってみたかったからです。
 
@@ -31,13 +33,13 @@ OSSのOpenID Provider（以下OP）であるKeycloakがサポートしてくれ�
 | 後編 | FAPI 2.0 Security Profileに準拠したOIDCクライアントの開発 |
 
 ということで本記事は前編です。
-（中編/後編も間に合えばアドカレに載せたいが、、感触厳しそう）
+中編/後編はアドカレ終了後に細々と更新予定です。
 
 ### 1.2. 記事のゴール
 
 | 分類 | ゴール |
 | ---- | ---- |
-| 仕様理解 | FAPI 1.0 Part1: Baselineに関する仕様を順を追って説明する |
+| 仕様理解 | FAPI 1.0 Part1: Baselineに関する仕様について順を追って説明する |
 | 実装理解 | FAPI 1.0 Part1: Baselineの要求事項に準拠したOIDCクライアントを開発し、keycloakからAPI正常応答が返るようにする |
 
 ### 1.3. 想定読者層
@@ -45,7 +47,7 @@ OSSのOpenID Provider（以下OP）であるKeycloakがサポートしてくれ�
 以下に関する仕様理解は前提とし、説明は割愛します。
 
 - [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html)
-  - `Authorization Code Flow`に基づく`Authrization Request` , `Token Request`のシーケンスやリクエスト/レスポンスの各種パラメータ
+  - `Authorization Code Flow`に基づく`Authorization Request` , `Token Request`のシーケンスやリクエスト/レスポンスの各種パラメータ
   - `IDToken Validation`の際に検証対象とする各種パラメータ
 - [PKCE](https://datatracker.ietf.org/doc/html/rfc7636)
   - 各種シーケンス
@@ -68,19 +70,16 @@ OSSのOpenID Provider（以下OP）であるKeycloakがサポートしてくれ�
 | tools | Docker | 28.1.1 | 
 | tools | Docker Compose | v2.35.1 |
 | tools | keytool | 21.0.7 |
-| tools | openssl | OpenSSL 1.1.1f  31 Mar 2020 |
+| tools | openssl | OpenSSL 1.1.1f 31 Mar 2020 |
 
 ### 1.5. ソースコード
 
-本記事に掲載するソースコード(※)は以下の`feature/ph02.3/security_enhanced`ブランチのものを一部記事用に修正して掲載しています。
+本記事に掲載するソースコードは以下の`feature/ph02.3/security_enhanced`ブランチのものを一部記事用に修正して掲載しています。
 https://github.com/takumi13/keycloak-idp-rp/tree/feature/ph02.3/security_enhanced
 
-### 1.6. 免責事項
+### 1.6. 本記事へFB
 
-ソースコードやシーケンスの大部分は`GPT-5.1-Codex (Preview)`を利用して作成していますが、OIDCに関する各種specやRFCと照らし合わせた処理の正当性確認は筆者自身が行っています。
-また、セキュアコーディングに関しても（私の拙い知見を基に）可能な限り注意してレビューしています。
-
-上記の前提で、コメント、Twitter(現X)等にていただいたご指摘は謹んで受け取り、コード改修/記事反映に努めさせていただきます。
+ソースコードの大部分は`GPT-5.1-Codex (Preview)`を利用して作成していますが、OIDCに関する各種specやRFCと照らし合わせた処理の正当性確認は筆者自身がおこなっています。誤りがあればコメント、Twitter(現X)等にてご指摘いただけますと幸いです。
 
 ## 2. FAPI準拠クライアントへの成長サクセスストーリー
 
@@ -97,7 +96,7 @@ OIDCクライアントのMTI
 クライアントは以下の3つの処理を行います。
 
 1. `Authorization Request`を実行
-  - state, nonce, [pkce](https://datatracker.ietf.org/doc/html/rfc7636)パラメータをそれぞれ生成
+    - state, nonce, [pkce](https://datatracker.ietf.org/doc/html/rfc7636)パラメータをそれぞれ生成
 2. 受け取った認可コードを使って`Token Request`を実行
 3. 受け取ったJWT型の`access_token`を復号して`id_token`を取り出し、IDトークンを検証
 
@@ -682,7 +681,7 @@ mTLSは、OAuth 2.0 Mutual-TLS Client Authentication and Certificate-Bound Acces
 
 ホストサーバをサーバ証明書によって信頼できる（真正性が保たれた）状態にすることで、クライアントサーバは安心してリモートサーバへアクセス可能となります。
 
-このときリモートサーバ目線では、クライアントサーバが信頼できる接続元であるかどうかをTLS層で判断することができません。代替方式として、OpenID Connect Core1.0では例えばクライアント認証方式として`client_secret_post`を利用することで、アプリケーション層で`client_id`と`client_secret`を一致確認をし、接続元のクライアントを信頼します。
+このときリモートサーバ目線では、クライアントサーバが信頼できる接続元であるかどうかをTLS層で判断することができません。代替方式として、OpenID Connect Core1.0では例えばクライアント認証方式として`client_secret_post`を利用することで、アプリケーション層で`client_id`と`client_secret`の一致確認をし、接続元のクライアントを信頼します。
 
 上記の例に当てはめると、mTLSは、「**クライアントサーバが提示したクライアント証明書をリモートサーバが検証することで、TLS層においてクライアントサーバの真正性を保証し、そのクライアントを認証する仕組み**」といえます。
 
@@ -912,9 +911,9 @@ public class KeycloakHttpClientFactory {
 ###### キーストアとトラストストアの役割
 
 * **キーストア (KeyStore)**
-クライアント証明書とその秘密鍵を保持します。mTLSでは、クライアント側もサーバーに対して証明書を提示する必要があるため、このキーストアから秘密鍵付きの証明書チェーンを取り出し、KeyManagerとしてSSLContext に登録します。
+クライアント証明書とその秘密鍵を保持します。mTLSでは、クライアント側もサーバに対して証明書を提示する必要があるため、このキーストアから秘密鍵付きの証明書チェーンを取り出し、KeyManagerとしてSSLContext に登録します。
 * **トラストストア (TrustStore)**
-「どの証明書を信頼するか」を定義するストアです。ここにはKeycloakサーバー証明書を発行したCA証明書、あるいは自己署名証明書そのものが格納されます。これをTrustManagerとしてSSLContextに登録することで、Keycloak側サーバー証明書の検証ができるようになります。
+「どの証明書を信頼するか」を定義するストアです。ここにはKeycloakサーバ証明書を発行したCA証明書、あるいは自己署名証明書そのものが格納されます。これをTrustManagerとしてSSLContextに登録することで、Keycloak側サーバ証明書の検証ができるようになります。
 
 MtlsProperties からはこれらのパスやパスワード、タイプが注入されます（例: PKCS12 / JKS など）。
 
@@ -942,8 +941,8 @@ mTLS通信のための準備はすべて`KeycloakHttpClientFactory`に委譲し�
 によって初期化された`HttpClient`が返却されます。
 
 この`HttpClient`でKeycloakのトークンEPに`HTTPS POST`することで、TLSハンドシェイクの中で
-* サーバー証明書をトラストストアで検証
-* クライアント証明書をサーバーに提示し、Keycloak側のmTLS要求を満たす
+* サーバ証明書をトラストストアで検証
+* クライアント証明書をサーバに提示し、Keycloak側のmTLS要求を満たす
 * ハンドシェイクが成功すると、通常の HTTP/1.1 通信としてトークン応答を受け取る
 
 という一連の処理を実行できます。
