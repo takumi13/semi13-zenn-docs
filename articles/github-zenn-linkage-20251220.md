@@ -3,7 +3,7 @@ title: "KeycloakのFAPIポリシーに準拠したOIDCクライアントを作�
 emoji: "🌟"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["Java", "SpringBoot", "Keycloak", "OIDC", "FAPI"]
-published: false
+published: true
 publication_name: "oidfj"
 ---
 
