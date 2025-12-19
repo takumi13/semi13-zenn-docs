@@ -1020,3 +1020,12 @@ grant_type=authorization_code
 次回記事ではFAPI 1.0 Part2: Advancedに準拠したOIDCクライアントを開発してみます。
 
 おそらく、Qiitaアドカレ2025には間に合いません。。また年明けに記事を書こうと思います。
+
+## 5. 参考文献
+
+- Keycloak で クライアントポリシー + FAPI を試す with PKCE
+  - https://www.creationline.com/tech-blog/cloudnative/keycloak/46316
+- QuarkusベースのKeycloakが出力するログについて
+  - https://qiita.com/tamura__246/items/cd96437725be9feea712
+- Docker-Composeを使用した際のKeyCloakのデータを外部DBに依存させる方法
+  - https://zenn.dev/emp_tech_blog/articles/996920de0b93b7
