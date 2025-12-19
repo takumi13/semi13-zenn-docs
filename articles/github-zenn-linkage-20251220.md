@@ -13,6 +13,11 @@ published: false
 はじめまして、@semi13 です。
 OpenID Foundation Japan TG40WGのメンバとしてこれからいくつか記事を執筆予定です。よろしくお願いいたします。
 
+Digital Identity 技術勉強会 #iddance Advent Calendar 2025
+20 日目の記事です。
+
+https://qiita.com/advent-calendar/2025/iddance
+
 さて。私がこのような記事を執筆しようと思った理由はシンプルです。
 OpenID Connect準拠のクライアントのバックエンド処理を自分で書いたことがないからです。
 とはいえ一から書ける能力も時間も足りないため、バイブコーディングに頼ろうと思います。
