@@ -35,8 +35,10 @@ published: false
 基本的には前編記事と同様です。
 FAPI1 Part2: Advancedに準拠するために実装する必要がある以下については、本記事でも概要を説明します。
 
-- [JWT-Secured Authorization Request (JAR)](https://www.rfc-editor.org/rfc/rfc9101.html)
-- [Pushed Authorization Requests(PAR)](https://datatracker.ietf.org/doc/html/rfc9126)
+- [FAPI1.0 Part2: Advanced](https://openid.net/specs/openid-financial-api-part-2-1_0.html)
+- [【RFC7523】JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants](https://datatracker.ietf.org/doc/html/rfc7523)
+- [【RFC9101】JWT-Secured Authorization Request (JAR)](https://www.rfc-editor.org/rfc/rfc9101.html)
+- [【RFC9126】Pushed Authorization Requests(PAR)](https://datatracker.ietf.org/doc/html/rfc9126)
 - [JWT Secured Authorization Response Mode(JARM)](https://openid.net/specs/oauth-v2-jarm.html)
 
 ### 1.4. 技術スタック
