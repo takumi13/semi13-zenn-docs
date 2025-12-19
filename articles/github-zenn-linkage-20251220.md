@@ -5,6 +5,7 @@ type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["Java", "SpringBoot", "Keycloak", "OIDC", "FAPI"]
 published: true
 publication_name: "oidfj"
+published_at: 2025-12-20 00:10
 ---
 
 ## 1. はじめに
