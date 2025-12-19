@@ -4,6 +4,7 @@ emoji: "🌟"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["Java", "SpringBoot", "Keycloak", "OIDC", "FAPI"]
 published: false
+publication_name: "oidfj"
 ---
 
 ## 1. はじめに
